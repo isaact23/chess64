@@ -1,26 +1,36 @@
 // We will probably need CORS (cross-origin)
 
-// Initialize express app
+// Initialize express/http/socket stack
 const app = require('express')();
-// Initialize http server
 const server = require('http').createServer(app);
-// Initialize socket.io
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"]
+    }
+});
+
+var openRooms = {};
+var closedRooms = {};
 
 // Event 'connection' creates a socket from the requesting client
 io.on('connection', (socket) => {
-    console.log("User connected");
+    console.log('User connected');
+    socket.emit('connection', null);
 
     socket.on('playGame', handlePlayGame);
 
     // Handle a player request to play chess
-    function handlePlayGame() {
+    function handlePlayGame(time, increment) {
+        console.log("Play game request");
 
+        // TODO: Wait until a room is found
+        socket.emit('startGame');
     }
 });
 
 // Open http server to requests
-const port = 5000;
-server.listen(port, () => {
-    console.log('Listening on port ', port);
+const PORT = 5000;
+server.listen(PORT, () => {
+    console.log('Listening on port ', PORT);
 })
