@@ -20,10 +20,7 @@ export default class Home extends React.Component {
 
     render() {
         return (
-            <div>
-                <header>
-                    <h1>Chess 64</h1>
-                </header>
+            <div className="homeComponent">
                 <div className="allColumns">
                     <div className="column">
                         <h1>New game</h1>

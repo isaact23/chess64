@@ -10,8 +10,8 @@ const io = require('socket.io')(server, {
     }
 });
 
-var openRooms = {};
-var closedRooms = {};
+var openRooms = [];
+var closedRooms = [];
 
 // Event 'connection' creates a socket from the requesting client
 io.on('connection', (socket) => {
@@ -23,6 +23,14 @@ io.on('connection', (socket) => {
     // Handle a player request to play chess
     function handlePlayGame(time, increment) {
         console.log("Play game request");
+        console.log("Iterating through open rooms...");
+        for (room in openRooms) {
+            console.log(room);
+        }
+
+        console.log("No open room found. Using this socket's default room");
+        console.log(socket.rooms);
+        openRooms.push(socket.rooms[0]);
 
         // TODO: Wait until a room is found
         socket.emit('startGame');
