@@ -15,7 +15,8 @@ export default class Home extends React.Component {
     // Request a game from the backend
     joinGame(time, increment) {
         this.setState({'joiningGame': true});
-        this.props.socket.emit('playGame', time, increment);
+        const settings = {time: time, increment: increment};
+        this.props.socket.emit('playGame', settings);
     }
 
     render() {

@@ -14,7 +14,8 @@ export default class App extends React.Component {
         super(props);
 
         this.state = {
-            playing: false
+            playing: false,
+            settings: null // Game-specific settings like time and increment
         };
 
         // Bind functions
@@ -23,10 +24,18 @@ export default class App extends React.Component {
 
     // Initialize io listeners
     componentDidMount() {
-        // Receive message from server that connection request is received
+        // Connection with server verified
         socket.on('connection', () => {
             // TODO: Find out why this doesn't print. Issue affects all client-side console.log statements.
             console.log("Connected to server successfully");
+        });
+
+        // Server starts a game
+        socket.on('startGame', (settings) => {
+            this.setState({
+                playing: true,
+                settings: settings
+            });
         });
     }
 
