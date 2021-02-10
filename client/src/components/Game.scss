@@ -1,0 +1,16 @@
+@import "../color_scheme";
+
+.chessboard {
+  float: left;
+}
+
+.gameControls {
+  width: 300px;
+  height: 400px;
+  margin-left: 50px;
+  background-color: $panel1-color;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 5px;
+  float: left;
+}

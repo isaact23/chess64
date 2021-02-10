@@ -1,4 +1,4 @@
-$btn-color: #fffcf0;
+@import "../color_scheme";
 
 h1 {
   margin: 20px;
@@ -24,7 +24,7 @@ p {
   border-radius: 10px;
 }
 
-button {
+button#timeControlBtn {
   width: 25%;
   height: 15%;
   margin: 3.5%;

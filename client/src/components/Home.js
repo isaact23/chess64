@@ -9,14 +9,13 @@ export default class Home extends React.Component {
         this.state = {
             joiningGame: false
         };
-        console.log("HEY!");
     }
 
     // Request a game from the backend
     joinGame(time, increment) {
         this.setState({'joiningGame': true});
         const settings = {time: time, increment: increment};
-        this.props.socket.emit('playGame', settings);
+        this.props.socket.emit('requestGame', settings);
     }
 
     render() {
@@ -26,22 +25,23 @@ export default class Home extends React.Component {
                     <div className="column">
                         <h1>New game</h1>
                         <h2 hidden={!this.state.joiningGame}>Joining game...</h2>
-                        <button disabled={this.state.joiningGame} onClick={() => this.joinGame(1, 0)}>
+                        <h2 hidden={!this.state.joiningGame}>Cancel join game</h2>
+                        <button id="timeControlBtn" disabled={this.state.joiningGame} onClick={() => this.joinGame(1, 0)}>
                             <p>1 + 0</p>
                         </button>
-                        <button disabled={this.state.joiningGame} onClick={() => this.joinGame(2, 1)}>
+                        <button id="timeControlBtn" disabled={this.state.joiningGame} onClick={() => this.joinGame(2, 1)}>
                             <p>2 + 1</p>
                         </button>
-                        <button disabled={this.state.joiningGame} onClick={() => this.joinGame(3, 0)}>
+                        <button id="timeControlBtn" disabled={this.state.joiningGame} onClick={() => this.joinGame(3, 0)}>
                             <p>3 + 0</p>
                         </button>
-                        <button disabled={this.state.joiningGame} onClick={() => this.joinGame(3, 2)}>
+                        <button id="timeControlBtn" disabled={this.state.joiningGame} onClick={() => this.joinGame(3, 2)}>
                             <p>3 + 2</p>
                         </button>
-                        <button disabled={this.state.joiningGame} onClick={() => this.joinGame(5, 0)}>
+                        <button id="timeControlBtn" disabled={this.state.joiningGame} onClick={() => this.joinGame(5, 0)}>
                             <p>5 + 0</p>
                         </button>
-                        <button disabled={this.state.joiningGame} onClick={() => this.joinGame(5, 3)}>
+                        <button id="timeControlBtn" disabled={this.state.joiningGame} onClick={() => this.joinGame(5, 3)}>
                             <p>5 + 3</p>
                         </button>
                     </div>

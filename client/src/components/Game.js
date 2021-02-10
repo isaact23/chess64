@@ -12,7 +12,15 @@ export default class Game extends React.Component {
     render() {
         return (
             <div className="gameComponent">
-                <Chessboard position="start"/>
+                <div className="chessboard">
+                    <Chessboard position="start"/>
+                </div>
+                <div className="gameControls">
+                    <h2>Controls</h2>
+                    <button>
+                        <p>Resign</p>
+                    </button>
+                </div>
             </div>
         );
     }
