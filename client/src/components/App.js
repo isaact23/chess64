@@ -30,8 +30,10 @@ export default class App extends React.Component {
             console.log("Connected to server successfully");
         });
 
-        // Server starts a game
+        // Server starts a game.
+        // Room joining is handled on server side.
         socket.on('startGame', (settings) => {
+            console.log(settings);
             this.setState({
                 playing: true,
                 settings: settings
@@ -42,7 +44,7 @@ export default class App extends React.Component {
     // Get the page the user is currently on
     getCurrentPage() {
         if (this.state.playing) {
-            return <Game />
+            return <Game socket={socket} settings={this.state.settings} />
         } else {
             return <Home socket={socket}/>;
         }

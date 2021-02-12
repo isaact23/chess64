@@ -36,13 +36,27 @@ let pairInterval = setInterval(function() {
                 // TODO: Ensure both players are still logged in (requests still valid)
                 let roomName = randomString(10);
 
-                // Add the sockets to the room
-                io.sockets.connected[request1.socketId].join(roomName);
-                io.sockets.connected[request2.socketId].join(roomName);
+                // Remove sockets from all room; add to new room for this game
+                request1.socket.leaveAll();
+                request2.socket.leaveAll();
+                request1.socket.join(roomName);
+                request2.socket.join(roomName);
+
+                // Randomly choose colors for player
+                let color1, color2;
+                if (Math.random() < 0.5) {
+                    color1 = "white";
+                    color2 = "black";
+                } else {
+                    color1 = "black";
+                    color2 = "white";
+                }
 
                 // Inform clients that game has started
-                io.to(request1.socketId).to(request2.socketId).emit('startGame',
-                    {time: request1.settings.time, increment: request1.settings.increment});
+                request1.socket.emit('startGame',
+                    {time: request1.settings.time, increment: request1.settings.increment, color: color1});
+                request2.socket.emit('startGame',
+                    {time: request1.settings.time, increment: request1.settings.increment, color: color2});
 
                 // Remove both requests
                 requests.splice(i, 1);
@@ -78,7 +92,7 @@ io.on('connection', (socket) => {
         }
 
         // Add request to request list
-        requests.push({socketId: socket.id, settings: settings});
+        requests.push({socket: socket, settings: settings});
     }
 });
 
