@@ -1,4 +1,3 @@
-const randomString = require('./randomString');
 const handleRequests = require('./handleRequests');
 
 // Initialize express/http/socket stack
@@ -15,9 +14,10 @@ const io = require('socket.io')(server, {
 
 // Requests for a room
 let requests = [];
+handleRequests(requests);
 
 // Every few seconds, iterate through game requests and pair up players.
-let handleRequestInterval = setInterval(handleRequests(requests), 1000);
+let handleRequestInterval = setInterval(function() { handleRequests(requests); }, 1000);
 
 // Event 'connection' creates a socket from the requesting client
 io.on('connection', (socket) => {
@@ -25,6 +25,7 @@ io.on('connection', (socket) => {
     socket.emit('connection', null);
 
     socket.on('requestGame', handleRequestGame);
+    socket.on('makeMove', handleMakeMove);
 
     // Handle a player request to play chess
     function handleRequestGame(settings) {
