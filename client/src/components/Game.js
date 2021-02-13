@@ -8,15 +8,39 @@ export default class Game extends React.Component {
 
     constructor(props) {
         super(props);
+        let newGame = new Chess("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         this.state = {
-            game: new Chess("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"),
+            game: newGame,
+            fen: newGame.fen(),
             settings: this.props.settings,
             myTurn: (this.props.settings.color === "white")
         }
+        this.onDrop = this.onDrop.bind(this);
     }
 
     onDrop = ({ sourceSquare, targetSquare }) => {
+        // Cancel move if it is not our turn.
+        if (!this.state.myTurn) { return; }
 
+        // Create new move
+        let move = this.state.game.move({
+            from: sourceSquare,
+            to: targetSquare,
+            promotion: "q" // TODO: Allow any type of promotion
+        });
+
+        // If move is illegal, cancel.
+        if (move === null) { return; }
+
+        // Update board
+        this.setState({
+            myTurn: false,
+            fen: this.state.game.fen()
+        });
+
+        // Send move to other player
+        console.log(move);
+        this.props.socket.emit("makeMove", move);
     }
 
     render() {
@@ -25,7 +49,7 @@ export default class Game extends React.Component {
                 <div className="chessboard">
                     <Chessboard
                         onDrop={this.onDrop}
-                        position={this.state.game.fen}
+                        position={this.state.fen}
                         orientation={this.state.settings.color}
                         boardStyle={{
                             borderRadius: "5px",

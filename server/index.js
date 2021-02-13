@@ -72,7 +72,7 @@ let pairInterval = setInterval(function() {
             startIndex++;
         }
     }
-}, 5000);
+}, 1000);
 
 
 // Event 'connection' creates a socket from the requesting client

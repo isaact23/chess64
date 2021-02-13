@@ -26,14 +26,12 @@ export default class App extends React.Component {
     componentDidMount() {
         // Connection with server verified
         socket.on('connection', () => {
-            // TODO: Find out why this doesn't print. Issue affects all client-side console.log statements.
-            console.log("Connected to server successfully");
+
         });
 
         // Server starts a game.
         // Room joining is handled on server side.
         socket.on('startGame', (settings) => {
-            console.log(settings);
             this.setState({
                 playing: true,
                 settings: settings
