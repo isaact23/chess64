@@ -6,6 +6,7 @@ import Chess from "chess.js";
 // The gameplay screen.
 export default class Game extends React.Component {
 
+    // Initialize a new game of chess when loading component.
     constructor(props) {
         super(props);
         let newGame = new Chess("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
@@ -16,6 +17,13 @@ export default class Game extends React.Component {
             myTurn: (this.props.settings.color === "white")
         }
         this.onDrop = this.onDrop.bind(this);
+    }
+
+    componentDidMount() {
+        // Handle the other player making a move
+        this.props.socket.on('makeMove', (move) => {
+            console.log(move);
+        });
     }
 
     onDrop = ({ sourceSquare, targetSquare }) => {
@@ -39,8 +47,7 @@ export default class Game extends React.Component {
         });
 
         // Send move to other player
-        console.log(move);
-        this.props.socket.emit("makeMove", move);
+        this.props.socket.broadcast.emit("makeMove", move);
     }
 
     render() {

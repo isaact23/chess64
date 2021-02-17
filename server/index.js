@@ -1,4 +1,5 @@
 const handleRequests = require('./handleRequests');
+// TODO: Add server-side handling of chess games to increase security
 
 // Initialize express/http/socket stack
 const app = require('express')();
@@ -12,12 +13,16 @@ const io = require('socket.io')(server, {
 
 // TODO: Add a script that runs every hour, removing old rooms from openRooms
 
-// Requests for a room
+
+// Requests for a game
 let requests = [];
 handleRequests(requests);
-
 // Every few seconds, iterate through game requests and pair up players.
 let handleRequestInterval = setInterval(function() { handleRequests(requests); }, 1000);
+
+
+
+
 
 // Event 'connection' creates a socket from the requesting client
 io.on('connection', (socket) => {
@@ -25,7 +30,6 @@ io.on('connection', (socket) => {
     socket.emit('connection', null);
 
     socket.on('requestGame', handleRequestGame);
-    socket.on('makeMove', handleMakeMove);
 
     // Handle a player request to play chess
     function handleRequestGame(settings) {
