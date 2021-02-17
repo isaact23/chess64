@@ -1,5 +1,5 @@
 const randomString = require('./randomString');
-const { Chess } = require('./chess.js')
+const { Chess } = require('chess.js')
 
 // Given an array of requests for games, iterate through the array and pair
 // up requests with the same game settings, and initialize these games.
@@ -42,12 +42,12 @@ function handleRequests(requests, addGame) {
                 // Keep game data on server side
                 let newGame = new Chess("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
                 let gameData = {socket1: socket1, socket2: socket2, game: newGame}
-                addGame(roomName, game);
+                addGame(roomName, gameData);
 
                 // Inform clients that game has started
                 socket1.emit('startGame',
                     {time: request1.settings.time, increment: request1.settings.increment, color: "white"});
-                request2.socket.emit('startGame',
+                socket2.emit('startGame',
                     {time: request1.settings.time, increment: request1.settings.increment, color: "black"});
 
                 // Remove both requests
