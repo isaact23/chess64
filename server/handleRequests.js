@@ -1,8 +1,9 @@
-
+const randomString = require('./randomString');
+const { Chess } = require('./chess.js')
 
 // Given an array of requests for games, iterate through the array and pair
 // up requests with the same game settings, and initialize these games.
-function handleRequests(requests) {
+function handleRequests(requests, addGame) {
     let startIndex = 0;
 
     // Repeat the loop until there are either less than 2 requests or no more requests can be paired.
@@ -22,27 +23,32 @@ function handleRequests(requests) {
                 // TODO: Ensure both players are still logged in (requests still valid)
                 let roomName = randomString(10);
 
-                // Remove sockets from all room; add to new room for this game
-                request1.socket.leaveAll();
-                request2.socket.leaveAll();
-                request1.socket.join(roomName);
-                request2.socket.join(roomName);
-
                 // Randomly choose colors for player
-                let color1, color2;
+                let socket1, socket2; // White and black sockets respectively
                 if (Math.random() < 0.5) {
-                    color1 = "white";
-                    color2 = "black";
+                    socket1 = request1.socket;
+                    socket2 = request2.socket;
                 } else {
-                    color1 = "black";
-                    color2 = "white";
+                    socket1 = request2.socket;
+                    socket2 = request1.socket;
                 }
 
+                // Remove sockets from all room; add to new room for this game
+                socket1.leaveAll();
+                socket2.leaveAll();
+                socket1.join(roomName);
+                socket2.join(roomName);
+                
+                // Keep game data on server side
+                let newGame = new Chess("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+                let gameData = {socket1: socket1, socket2: socket2, game: newGame}
+                addGame(roomName, game);
+
                 // Inform clients that game has started
-                request1.socket.emit('startGame',
-                    {time: request1.settings.time, increment: request1.settings.increment, color: color1});
+                socket1.emit('startGame',
+                    {time: request1.settings.time, increment: request1.settings.increment, color: "white"});
                 request2.socket.emit('startGame',
-                    {time: request1.settings.time, increment: request1.settings.increment, color: color2});
+                    {time: request1.settings.time, increment: request1.settings.increment, color: "black"});
 
                 // Remove both requests
                 requests.splice(i, 1);
