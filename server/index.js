@@ -1,23 +1,38 @@
+// Import modules
 const handleRequests = require('./handleRequests');
+const Chess = require('chess.js');
 
-// Initialize express/http/socket stack
+// Import network requirements
+const socketIo = require('socket.io');
 const express = require('express');
 const path = require('path');
-//const index = require('./build/index.html');
-const app = express();
-const io = require('socket.io')();
+const http = require("http");
 
-app.use(express.static(path.join(__dirname, 'build', 'index.html')));
+// Initialize express and middleware
+const app = express();
+app.use(express.static("build"));
+
+// Initialize http server
+const server = http.createServer(app);
+
+// Initialize socket.io
+const io = socketIo(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+});;
+
 
 // TODO: Add a script that runs every hour, removing old rooms from openRooms
 
-// Running games
+// Store running games
 let games = {};
 function addGame(room, game) {
     games[room] = game;
 }
 
-// Requests for a game
+// Store and handle game requests
 let requests = [];
 handleRequests(requests);
 // Every few seconds, iterate through game requests and pair up players.
@@ -30,6 +45,7 @@ io.on('connection', (socket) => {
     socket.emit('connection', null);
 
     socket.on('requestGame', handleRequestGame);
+    socket.on('makeMove', handleMakeMove);
 
     // Handle a player request to play chess
     function handleRequestGame(settings) {
@@ -38,10 +54,15 @@ io.on('connection', (socket) => {
         // Add request to request list
         requests.push({socket: socket, settings: settings});
     }
+
+    // Handle a player making a move (verify move and send to other player)
+    function handleMakeMove() {
+        console.log("Handling move");
+    }
 });
 
 // Open server to requests
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'build', 'index.html'))
 })
-app.listen(80);
+server.listen(5000);

@@ -46,8 +46,8 @@ export default class Game extends React.Component {
             fen: this.state.game.fen()
         });
 
-        // Send move to other player
-        this.props.socket.broadcast.emit("makeMove", move);
+        // Send move to server
+        this.props.socket.emit("makeMove", move);
     }
 
     render() {

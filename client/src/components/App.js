@@ -4,7 +4,7 @@ import Home from './Home';
 import Game from './Game';
 
 const io = require("socket.io-client");
-const socket = io("http://localhost:5000");
+const socket = io();
 
 // The App component contains all pages within the website.
 export default class App extends React.Component {
