@@ -1,14 +1,13 @@
 const handleRequests = require('./handleRequests');
 
 // Initialize express/http/socket stack
-const app = require('express')();
-const server = require('http').createServer(app);
-const io = require('socket.io')(server, {
-    cors: {
-        origin: "http://localhost:3000",
-        methods: ["GET", "POST"]
-    }
-});
+const express = require('express');
+const path = require('path');
+//const index = require('./build/index.html');
+const app = express();
+const io = require('socket.io')();
+
+app.use(express.static(path.join(__dirname, 'build', 'index.html')));
 
 // TODO: Add a script that runs every hour, removing old rooms from openRooms
 
@@ -41,8 +40,8 @@ io.on('connection', (socket) => {
     }
 });
 
-// Open http server to requests
-const PORT = 5000;
-server.listen(PORT, () => {
-    console.log('Listening on port ', PORT);
+// Open server to requests
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'))
 })
+app.listen(80);
