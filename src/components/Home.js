@@ -49,8 +49,8 @@ export default class Home extends React.Component {
                     </div>
                     <div className="column">
                         <h1>Join game</h1>
-                        <div className="joinBtn"><p>Game 1</p></div>
-                        <div className="joinBtn"><p>Game 2</p></div>
+                        <div className="joinBtn"><p>Coming</p></div>
+                        <div className="joinBtn"><p>Soon</p></div>
                     </div>
                 </div>
                 <footer>

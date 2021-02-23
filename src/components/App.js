@@ -53,7 +53,7 @@ export default class App extends React.Component {
         return (
             <div className="App">
                 <header>
-                    <h1>Chess 64</h1>
+                    <a href="https://github.com/isaact23/chess64"><h1>Chess 64</h1></a>
                 </header>
                 {this.getCurrentPage()}
             </div>
