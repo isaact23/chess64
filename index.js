@@ -1,5 +1,5 @@
 // Import modules
-const handleRequests = require('./handleRequests');
+const handleRequests = require('./server/handleRequests');
 const Chess = require('chess.js');
 
 // Import network requirements
@@ -7,10 +7,12 @@ const socketIo = require('socket.io');
 const express = require('express');
 const path = require('path');
 const http = require("http");
+var helmet = require('helmet');
 
 // Initialize express and middleware
 const app = express();
 app.use(express.static("build"));
+app.use(helmet);
 
 // Initialize http server
 const server = http.createServer(app);
