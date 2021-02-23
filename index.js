@@ -50,7 +50,7 @@ io.on('connection', (socket) => {
     socket.on('makeMove', handleMakeMove);
 
     // Handle a player request to play chess
-    function handleRequestGame(settings) {
+    async function handleRequestGame(settings) {
         console.log("Game requested, time " + settings.time + ", increment " + settings.increment);
 
         // Add request to request list
@@ -58,8 +58,25 @@ io.on('connection', (socket) => {
     }
 
     // Handle a player making a move (verify move and send to other player)
-    function handleMakeMove() {
+    async function handleMakeMove(move, room) {
         console.log("Handling move");
+        let game = games[room];
+
+        // Verify that the move is legal
+        let chessGame = game["chess"];
+        let serverMove = chessGame.move(move);
+        if (serverMove === null) {
+            return; // TODO: Emit win/lose messages; terminate game
+        }
+
+        // Send move to other player
+        if (serverMove.color === 'w') {
+            game.socket2.emit('makeMove', move);
+        } else if (serverMove.color === 'b') {
+            game.socket1.emit('makeMove', move);
+        } else {
+            console.log("Error! No color detected.");
+        }
     }
 });
 

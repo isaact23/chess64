@@ -3,7 +3,7 @@ const { Chess } = require('chess.js')
 
 // Given an array of requests for games, iterate through the array and pair
 // up requests with the same game settings, and initialize these games.
-function handleRequests(requests, addGame) {
+async function handleRequests(requests, addGame) {
     let startIndex = 0;
 
     // Repeat the loop until there are either less than 2 requests or no more requests can be paired.
@@ -40,15 +40,15 @@ function handleRequests(requests, addGame) {
                 socket2.join(roomName);
                 
                 // Keep game data on server side
-                let newGame = new Chess("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-                let gameData = {socket1: socket1, socket2: socket2, game: newGame}
+                let newChess = new Chess("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+                let gameData = {socket1: socket1, socket2: socket2, chess: newChess}
                 addGame(roomName, gameData);
 
                 // Inform clients that game has started
                 socket1.emit('startGame',
-                    {time: request1.settings.time, increment: request1.settings.increment, color: "white"});
+                    {time: request1.settings.time, increment: request1.settings.increment, room: roomName, color: "white"});
                 socket2.emit('startGame',
-                    {time: request1.settings.time, increment: request1.settings.increment, color: "black"});
+                    {time: request1.settings.time, increment: request1.settings.increment, room: roomName, color: "black"});
 
                 // Remove both requests
                 requests.splice(i, 1);

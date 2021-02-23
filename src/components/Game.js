@@ -22,7 +22,12 @@ export default class Game extends React.Component {
     componentDidMount() {
         // Handle the other player making a move
         this.props.socket.on('makeMove', (move) => {
-            console.log(move);
+            let clientMove = this.state.game.move(move);
+            if (clientMove === null) { return; }
+            this.setState({
+                fen: this.state.game.fen(),
+                myTurn: true
+            });
         });
     }
 
@@ -47,7 +52,7 @@ export default class Game extends React.Component {
         });
 
         // Send move to server
-        this.props.socket.emit("makeMove", move);
+        this.props.socket.emit("makeMove", move, this.state.settings.room);
     }
 
     render() {
