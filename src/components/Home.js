@@ -25,7 +25,9 @@ export default class Home extends React.Component {
                     <div className="column">
                         <h1>New game</h1>
                         <h2 hidden={!this.state.joiningGame}>Joining game...</h2>
-                        <h2 hidden={!this.state.joiningGame}>Cancel join game</h2>
+                        <button id="cancelJoinGameBtn" hidden={!this.state.joiningGame}>
+                            <h2>Cancel join game</h2>
+                        </button>
                         <button id="timeControlBtn" disabled={this.state.joiningGame} onClick={() => this.joinGame(1, 0)}>
                             <p>1 + 0</p>
                         </button>
