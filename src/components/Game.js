@@ -14,6 +14,7 @@ export default class Game extends React.Component {
             fen: chessObj.fen(),
             chessObj: chessObj,
             myTurn: this.props.settings.color === "white",
+            outcome: null, // win, lose, draw
             settings: this.props.settings
         }
         this.onDrop = this.onDrop.bind(this);
@@ -24,12 +25,25 @@ export default class Game extends React.Component {
         this.props.socket.on('makeMove', (move) => {
             let clientMove = this.state.chessObj.move(move);
             if (clientMove === null) { return; }
-            if (this.state.chessObj.game_over()) {
-                // TODO: End game
+            // Is game over (draw)?
+            if (this.state.chessObj.in_draw() || // 50-move; insufficient material
+                    this.state.chessObj.in_stalemate() ||
+                    this.state.chessObj.in_threefold_repetition()) {
+                this.setState({
+                    outcome: "draw"
+                });
+            // Is game over (checkmate)?
+            } else if (this.state.chessObj.in_checkmate()) {
+                this.setState({
+                    outcome: "lose"
+                });
+            } else {
+                this.setState({
+                    myTurn: true
+                });
             }
             this.setState({
-                fen: this.state.chessObj.fen(),
-                myTurn: true
+                fen: this.state.chessObj.fen()
             });
         });
     }
@@ -54,8 +68,15 @@ export default class Game extends React.Component {
             fen: this.state.chessObj.fen()
         });
 
+        // Determine if game is over
+        if (this.state.chessObj.game_over()) {
+            this.setState({
+                outcome: "win"
+            });
+        }
+
         // Send move to server
-        this.props.socket.emit("makeMove", move, this.state.settings.room);
+        this.props.socket.emit("makeMove", move, this.state.settings.sessionId);
     }
 
     render() {
@@ -75,6 +96,7 @@ export default class Game extends React.Component {
                 </div>
                 <div className="gameControls">
                     <h2>Controls</h2>
+                    <h2>Outcome: {this.state.outcome}</h2>
                     <button>
                         <p>Resign</p>
                     </button>

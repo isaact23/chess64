@@ -73,6 +73,11 @@ io.on('connection', (socket) => {
         } else {
             console.log("Error! No color detected.");
         }
+
+        // If game is over, remove game from server.
+        if (chessObj.game_over() || chessObj.in_draw()) {
+            delete games[sessionId];
+        }
     }
 });
 
