@@ -29,8 +29,8 @@ const io = socketIo(server, {
 
 // Store running games
 let games = {};
-function addGame(room, game) {
-    games[room] = game;
+function addGame(sessionId, gameData) {
+    games[sessionId] = gameData;
 }
 
 // Store and handle game requests
@@ -55,11 +55,11 @@ io.on('connection', (socket) => {
     }
 
     // Handle a player making a move (verify move and send to other player)
-    async function handleMakeMove(move, room) {
-        let game = games[room];
+    async function handleMakeMove(move, sessionId) {
+        let gameData = games[sessionId];
 
         // Verify that the move is legal
-        let chessObj = game["chessObj"];
+        let chessObj = gameData["chessObj"];
         let serverMove = chessObj.move(move);
         if (serverMove === null) {
             return; // TODO: Emit win/lose messages; terminate game
@@ -67,9 +67,9 @@ io.on('connection', (socket) => {
 
         // Send move to other player
         if (serverMove.color === 'w') {
-            game.socket2.emit('makeMove', move);
+            gameData.socket2.emit('makeMove', move);
         } else if (serverMove.color === 'b') {
-            game.socket1.emit('makeMove', move);
+            gameData.socket1.emit('makeMove', move);
         } else {
             console.log("Error! No color detected.");
         }
