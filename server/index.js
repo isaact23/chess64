@@ -1,5 +1,5 @@
 // Import modules
-const handleRequests = require('./server/handleRequests');
+const handleRequests = require('./handleRequests');
 const Chess = require('chess.js');
 
 // Import network requirements
@@ -12,7 +12,7 @@ var helmet = require('helmet');
 // Initialize express and middleware
 const app = express();
 app.use(express.static("build"));
-app.use(helmet);
+app.use(helmet());
 
 // Initialize http server
 const server = http.createServer(app);
@@ -86,3 +86,4 @@ app.get('/', (req, res) => {
 })
 let PORT = process.env.PORT || 5000;
 server.listen(PORT);
+console.log("Listening on " + PORT);

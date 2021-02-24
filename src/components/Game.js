@@ -72,7 +72,6 @@ export default class Game extends React.Component {
                 </div>
                 <div className="gameControls">
                     <h2>Controls</h2>
-                    <p>Room:</p>
                     <button>
                         <p>Resign</p>
                     </button>

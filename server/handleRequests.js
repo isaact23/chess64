@@ -36,6 +36,7 @@ async function handleRequests(requests, addGame) {
                 // Remove sockets from all room; add to new room for this game
                 socket1.leaveAll();
                 socket2.leaveAll();
+                // TODO: Remove rooms
                 socket1.join(roomName);
                 socket2.join(roomName);
                 
