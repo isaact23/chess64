@@ -6,15 +6,15 @@ import Chess from "chess.js";
 // The gameplay screen.
 export default class Game extends React.Component {
 
-    // Initialize a new game of chess when loading component.
+    // Initialize a new game of chess.
     constructor(props) {
         super(props);
-        let newGame = new Chess("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        let chessObj = new Chess("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         this.state = {
-            game: newGame,
-            fen: newGame.fen(),
-            settings: this.props.settings,
-            myTurn: (this.props.settings.color === "white")
+            fen: chessObj.fen(),
+            chessObj: chessObj,
+            myTurn: this.props.settings.color === "white",
+            settings: this.props.settings
         }
         this.onDrop = this.onDrop.bind(this);
     }
@@ -22,10 +22,13 @@ export default class Game extends React.Component {
     componentDidMount() {
         // Handle the other player making a move
         this.props.socket.on('makeMove', (move) => {
-            let clientMove = this.state.game.move(move);
+            let clientMove = this.state.chessObj.move(move);
             if (clientMove === null) { return; }
+            if (this.state.chessObj.game_over()) {
+                // TODO: End game
+            }
             this.setState({
-                fen: this.state.game.fen(),
+                fen: this.state.chessObj.fen(),
                 myTurn: true
             });
         });
@@ -36,7 +39,7 @@ export default class Game extends React.Component {
         if (!this.state.myTurn) { return; }
 
         // Create new move
-        let move = this.state.game.move({
+        let move = this.state.chessObj.move({
             from: sourceSquare,
             to: targetSquare,
             promotion: "q" // TODO: Allow any type of promotion
@@ -48,7 +51,7 @@ export default class Game extends React.Component {
         // Update board
         this.setState({
             myTurn: false,
-            fen: this.state.game.fen()
+            fen: this.state.chessObj.fen()
         });
 
         // Send move to server

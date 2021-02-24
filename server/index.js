@@ -1,6 +1,5 @@
 // Import modules
 const handleRequests = require('./handleRequests');
-const Chess = require('chess.js');
 
 // Import network requirements
 const socketIo = require('socket.io');
@@ -23,7 +22,7 @@ const io = socketIo(server, {
         origin: "*",
         methods: ["GET", "POST"]
     }
-});;
+});
 
 
 // TODO: Add a script that runs every hour, removing old rooms from openRooms
@@ -36,14 +35,12 @@ function addGame(room, game) {
 
 // Store and handle game requests
 let requests = [];
-handleRequests(requests);
-// Every few seconds, iterate through game requests and pair up players.
-let handleRequestInterval = setInterval(function() { handleRequests(requests, addGame); }, 1000);
+setInterval(function() { handleRequests(requests, addGame); }, 1000);
 
 
 // Event 'connection' creates a socket from the requesting client
 io.on('connection', (socket) => {
-    console.log('User connected');
+    console.log("User connected");
     socket.emit('connection', null);
 
     socket.on('requestGame', handleRequestGame);
@@ -59,12 +56,11 @@ io.on('connection', (socket) => {
 
     // Handle a player making a move (verify move and send to other player)
     async function handleMakeMove(move, room) {
-        console.log("Handling move");
         let game = games[room];
 
         // Verify that the move is legal
-        let chessGame = game["chess"];
-        let serverMove = chessGame.move(move);
+        let chessObj = game["chessObj"];
+        let serverMove = chessObj.move(move);
         if (serverMove === null) {
             return; // TODO: Emit win/lose messages; terminate game
         }

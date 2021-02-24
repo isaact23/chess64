@@ -41,8 +41,8 @@ async function handleRequests(requests, addGame) {
                 socket2.join(roomName);
                 
                 // Keep game data on server side
-                let newChess = new Chess("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-                let gameData = {socket1: socket1, socket2: socket2, chess: newChess}
+                let chessObj = new Chess("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+                let gameData = {socket1: socket1, socket2: socket2, chessObj: chessObj}
                 addGame(roomName, gameData);
 
                 // Inform clients that game has started
