@@ -4,7 +4,6 @@ import './index.scss';
 import App from './components/App';
 import reportWebVitals from './reportWebVitals';
 
-// TODO: Remove ReactDOM from server side
 ReactDOM.render(
   <React.StrictMode>
     <App />

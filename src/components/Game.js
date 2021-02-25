@@ -91,7 +91,6 @@ export default class Game extends React.Component {
                             borderRadius: "5px",
                             boxShadow: `0 5px 15px rgba(0, 0, 0, 0.5)`
                         }}
-
                     />
                 </div>
                 <div className="gameControls">
