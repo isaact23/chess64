@@ -1,9 +1,5 @@
 @import "../color_scheme";
 
-body {
-  margin: 0;
-}
-
 p {
   font-size: 24px;
 }
@@ -49,7 +45,7 @@ button#cancelJoinGameBtn {
   height: 50px;
   margin: 0;
   padding: 0;
-  background-color: #ded1bf
+  background-color: $btn-color
 }
 
 .navBtn {

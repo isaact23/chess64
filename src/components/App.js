@@ -53,7 +53,7 @@ export default class App extends React.Component {
         return (
             <div className="App">
                 <header>
-                    <h1>Chess 64</h1>
+                    <div className="title"><h1>Chess 64</h1></div>
                     <h2>About</h2>
                 </header>
                 {this.getCurrentPage()}
