@@ -83,8 +83,8 @@ io.on('connection', (socket) => {
 
 // Open server to requests
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'))
-})
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
 let PORT = process.env.PORT || 5000;
 server.listen(PORT);
 console.log("Listening on " + PORT);

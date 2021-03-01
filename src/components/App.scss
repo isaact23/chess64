@@ -1,9 +1,8 @@
 @import "../color_scheme";
 
-header {
-  background-color: $navbar-color;
-}
-
-header.title {
-  background-color: red;
+body {
+  background-image: url("../images/chess_glass.png");
+  background-position-y: 20%;
+  background-size: cover;
+  background-color: #ffffff;
 }
