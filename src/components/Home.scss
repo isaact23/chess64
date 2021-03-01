@@ -1,59 +1,30 @@
 @import "../color_scheme";
 
-p {
-  font-size: 24px;
+body {
+  background-image: url("../images/chess_glass.png");
+  background-position-y: 20%;
+  background-size: cover;
+  background-color: #ffffff;
 }
 
-.allColumns {
-  width: 70%;
-  height: 550px;
-  margin: 20px auto;
-  border-style: solid;
-}
-
-.column {
-  width: 430px;
-  height: 500px;
-  margin: 25px 4%;
-  float: left;
-  border-style: dashed;
-  border-radius: 10px;
-}
-
-button#timeControlBtn {
-  width: 25%;
-  height: 15%;
-  margin: 3.5%;
+.mainPanel {
+  width: 40%;
+  height: 80vh;
   float: left;
   border-style: solid;
-  border-width: 1px;
-  border-radius: 3px;
-  background-color: $btn-color;
+  border-width: 2px;
+  background-color: $panel-color;
+}
+
+.newGamePanel {
+  width: 50%;
+  float: right;
+  border-style: solid;
+  border-width: 2px;
+  background-color: $panel-color;
 }
 
 button#cancelJoinGameBtn {
   width: 70%;
   height: 50px;
-  border-style: solid;
-  border-width: 1px;
-  border-radius: 3px;
-  background-color: $btn-color;
-}
-
-.joinBtn {
-  width: 100%;
-  height: 50px;
-  margin: 0;
-  padding: 0;
-  background-color: $btn-color
-}
-
-.navBtn {
-  width: 150px;
-  height: 70px;
-  margin: auto;
-  border-style: solid;
-  border-width: 1px;
-  border-radius: 3px;
-  background-color: $btn-color;
 }

@@ -91,12 +91,13 @@ export default class Game extends React.Component {
                             borderRadius: "5px",
                             boxShadow: `0 5px 15px rgba(0, 0, 0, 0.5)`
                         }}
+                        lightSquareStyle={{backgroundColor: "#b5c9eb"}}
+                        darkSquareStyle={{backgroundColor: "#8c9cb8"}}
                     />
                 </div>
                 <div className="gameControls">
-                    <h2>Controls</h2>
                     <h2>Outcome: {this.state.outcome}</h2>
-                    <button>
+                    <button id="resignBtn">
                         <p>Resign</p>
                     </button>
                 </div>

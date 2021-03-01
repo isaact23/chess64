@@ -1,8 +1,33 @@
 @import "../color_scheme";
 
 body {
-  background-image: url("../images/chess_glass.png");
-  background-position-y: 20%;
-  background-size: cover;
-  background-color: #ffffff;
+  margin: 4%;
+}
+
+h1 {
+  font-size: 40px;
+  margin: 20px;
+  text-align: center;
+}
+
+h2 {
+  font-size: 28px;
+  text-align: center;
+}
+
+p {
+  font-size: 24px;
+  margin: 20px;
+  text-align: center;
+}
+
+button {
+  width: 25%;
+  height: 15%;
+  margin: 3.5%;
+  float: left;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 3px;
+  background-color: $btn-color;
 }
