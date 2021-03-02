@@ -34,21 +34,27 @@ export default class Home extends React.Component {
                     </div>
                     <button id="timeControlBtn" disabled={this.state.joiningGame} onClick={() => this.joinGame(1, 0)}>
                         <p>1 + 0</p>
+                        <p>Bullet</p>
                     </button>
                     <button id="timeControlBtn" disabled={this.state.joiningGame} onClick={() => this.joinGame(2, 1)}>
                         <p>2 + 1</p>
+                        <p>Bullet</p>
                     </button>
                     <button id="timeControlBtn" disabled={this.state.joiningGame} onClick={() => this.joinGame(3, 0)}>
                         <p>3 + 0</p>
+                        <p>Blitz</p>
                     </button>
                     <button id="timeControlBtn" disabled={this.state.joiningGame} onClick={() => this.joinGame(3, 2)}>
                         <p>3 + 2</p>
+                        <p>Blitz</p>
                     </button>
                     <button id="timeControlBtn" disabled={this.state.joiningGame} onClick={() => this.joinGame(5, 0)}>
                         <p>5 + 0</p>
+                        <p>Blitz</p>
                     </button>
-                    <button id="timeControlBtn" disabled={this.state.joiningGame} onClick={() => this.joinGame(5, 3)}>
-                        <p>5 + 3</p>
+                    <button id="timeControlBtn" disabled={this.state.joiningGame} onClick={() => this.joinGame(10, 0)}>
+                        <p>10 + 0</p>
+                        <p>Rapid</p>
                     </button>
                 </div>
             </div>
