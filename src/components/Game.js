@@ -96,6 +96,9 @@ export default class Game extends React.Component {
                     />
                 </div>
                 <div className="gameControls">
+                    <div className="timer">
+                        <div className="subTimer"><p>5:00</p></div><div className="subTimer"><p>5:00</p></div>
+                    </div>
                     <h2>Outcome: {this.state.outcome}</h2>
                     <button id="resignBtn">
                         <p>Resign</p>

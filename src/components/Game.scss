@@ -14,6 +14,17 @@
   float: left;
 }
 
+.timer {
+  box-sizing: border-box;
+  width: 100%;
+}
+.subTimer {
+  background-color: white;
+  display: table-cell;
+  float: left;
+  width: 50%;
+}
+
 button#resignBtn {
   width: 50%;
   margin-left: 25%;
