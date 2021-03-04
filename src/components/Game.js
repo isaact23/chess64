@@ -29,6 +29,7 @@ export default class Game extends React.Component {
         this.flipTurn = this.flipTurn.bind(this);
         this.updateTimer = this.updateTimer.bind(this);
         this.getTime = this.getTime.bind(this);
+        this.getOutcome = this.getOutcome.bind(this);
 
         // Periodically update the timer on screen
         setInterval(this.updateTimer, 1000);
@@ -148,12 +149,28 @@ export default class Game extends React.Component {
         } else {
             time = this.state.timer.blackTime;
         }
-        let min = Math.floor(time / 60000).toString();
-        let sec = (Math.ceil(time / 1000) % 60).toString();
+        let min = Math.floor(time / 60000); // Becomes 0 exactly when seconds hits 0
+        let sec = ((time % 60000) / 1000).toFixed(0);
+        if (sec >= 60) {
+            sec = 0;
+            min += 1;
+        }
         if (sec.length < 2) {
             sec = "0" + sec;
         }
         return min + ":" + sec;
+    }
+
+    // Get outcome string to display to user.
+    getOutcome() {
+        if (this.state.outcome === "draw") {
+            return "Draw";
+        } else if (this.state.outcome === "white_wins") {
+            return "White Wins";
+        } else if (this.state.outcome === "black_wins") {
+            return "Black Wins!";
+        }
+        return "";
     }
 
     render() {
@@ -176,8 +193,8 @@ export default class Game extends React.Component {
                     <div className="timer">
                         <div className="subTimer"><p>{this.getTime("white")}</p></div><div className="subTimer"><p>{this.getTime("black")}</p></div>
                     </div>
-                    <h2>Outcome: {this.state.outcome}</h2>
-                    <button id="resignBtn">
+                    <h2>{this.getOutcome()}</h2>
+                    <button id="resignBtn" disabled={this.state.gameOver}>
                         <p>Resign</p>
                     </button>
                 </div>

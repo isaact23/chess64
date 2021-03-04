@@ -87,6 +87,7 @@ io.on('connection', (socket) => {
     // Handle a player making a move (verify move and send to other player)
     async function handleMakeMove(move, sessionId) {
         let gameData = games[sessionId];
+        if (gameData === undefined) { return; }
 
         // Verify that the move is legal
         let chessObj = gameData.chessObj;
@@ -138,6 +139,8 @@ io.on('connection', (socket) => {
     // Check timer; if time's up, end the game. Else, update clients on time remaining.
     async function handleCheckTime(sessionId) {
         let gameData = games[sessionId];
+        if (gameData === undefined) { return; }
+
         updateTimer(gameData); // Get timer up to date
 
         let gameOver = false;
