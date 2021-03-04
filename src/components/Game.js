@@ -147,6 +147,9 @@ export default class Game extends React.Component {
 
     // Resign.
     resign() {
+        this.setState({
+            gameOver: true
+        });
         this.props.socket.emit("resign", this.settings.sessionId);
     }
 
