@@ -34,8 +34,9 @@ async function handleRequests(requests, addGame) {
                 
                 // Keep game data on server side
                 let chessObj = new Chess("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+                let gameTime = request1.settings.time * 60000;
                 let gameData = {socket1: socket1, socket2: socket2, chessObj: chessObj, turn: "white",
-                    timer: {whiteTime: 0, blackTime: 0, startTime: new Date().getTime()}};
+                    timer: {whiteTime: gameTime, blackTime: gameTime, startTime: new Date().getTime()}};
                 addGame(sessionId, gameData);
 
                 // Inform clients that game has started

@@ -15,19 +15,20 @@ export default class Game extends React.Component {
         // State changes throughout the game and affects the React component.
         this.state = {
             fen: this.chessObj.fen(),
-            turn: "white",
+            gameOver: false,
             outcome: null, // win, lose, draw
             timer: {
                 whiteTime: gameTime,
                 blackTime: gameTime,
                 startTime: new Date().getTime()
-            }
+            },
+            turn: "white"
         }
         // Bind functions to this class
         this.onDrop = this.onDrop.bind(this);
         this.flipTurn = this.flipTurn.bind(this);
-        this.getTime = this.getTime.bind(this);
         this.updateTimer = this.updateTimer.bind(this);
+        this.getTime = this.getTime.bind(this);
 
         // Periodically update the timer on screen
         setInterval(this.updateTimer, 1000);
@@ -35,38 +36,43 @@ export default class Game extends React.Component {
 
     componentDidMount() {
         // Handle the other player making a move
-        this.props.socket.on('makeMove', (move, timer) => {
+        this.props.socket.on('makeMove', (move) => {
             let clientMove = this.chessObj.move(move);
             if (clientMove === null) { return; }
 
-            // Update timer with data from server
-            this.setState({timer: timer});
-
-            // Is game over (draw)?
-            if (this.chessObj.in_draw() || // 50-move; insufficient material
-                    this.chessObj.in_stalemate() ||
-                    this.chessObj.in_threefold_repetition()) {
-                this.setState({
-                    outcome: "draw"
-                });
-            // Is game over (checkmate)?
-            } else if (this.chessObj.in_checkmate()) {
-                this.setState({
-                    outcome: "lose"
-                });
-            } else {
-                this.flipTurn();
-            }
+            // Update FEN
             this.setState({
                 fen: this.chessObj.fen()
+            });
+            this.flipTurn();
+
+            // Determine if game is over
+            if (this.chessObj.game_over()) {
+                this.setState({
+                    gameOver: true
+                });
+            }
+        });
+
+        // Handle server sending updated timer
+        this.props.socket.on("updateTimer", (timer) => {
+            this.setState({timer: timer});
+        });
+
+        // Handle server ending the game
+        this.props.socket.on("endGame", (outcome) => {
+            this.setState({
+                gameOver: true,
+                outcome: outcome
             });
         });
     }
 
     // Handle the client player making a chess move.
     onDrop = ({ sourceSquare, targetSquare }) => {
-        // Cancel move if it is not our turn.
+        // Cancel move if it is not our turn or game is over.
         if (this.state.turn !== this.settings.color) { return; }
+        if (this.state.gameOver) { return; }
 
         // Create new move
         let move = this.chessObj.move({
@@ -89,7 +95,7 @@ export default class Game extends React.Component {
         // Determine if game is over
         if (this.chessObj.game_over()) {
             this.setState({
-                outcome: "win"
+                gameOver: true
             });
         }
 
@@ -106,6 +112,34 @@ export default class Game extends React.Component {
         }
     }
 
+    // Add time between now and startTime to the player whose turn it is. Call BEFORE flipTurn().
+    updateTimer() {
+        let changedTimer = this.state.timer;
+        let currentTime = new Date().getTime();
+        let deltaTime = currentTime - this.state.timer.startTime;
+        let outOfTime = false;
+        if (this.state.turn === "white") {
+            changedTimer.whiteTime -= deltaTime;
+            if (changedTimer.whiteTime < 0) {
+                changedTimer.whiteTime = 0;
+                outOfTime = true;
+            }
+        } else {
+            changedTimer.blackTime -= deltaTime;
+            if (changedTimer.blackTime < 0) {
+                changedTimer.blackTime = 0;
+                outOfTime = true;
+            }
+        }
+        changedTimer.startTime = currentTime;
+        this.setState({timer: changedTimer});
+
+        // If we are out of time, inform server.
+        if (outOfTime) {
+            this.props.socket.emit("checkTime", this.settings.sessionId);
+        }
+    }
+
     // Return a string representing the time left for a player.
     getTime(color) {
         let time;
@@ -114,29 +148,12 @@ export default class Game extends React.Component {
         } else {
             time = this.state.timer.blackTime;
         }
-        if (time < 0) {
-            time = 0;
-        }
         let min = Math.floor(time / 60000).toString();
-        let sec = Math.floor((time % 60000) / 1000).toString();
+        let sec = (Math.ceil(time / 1000) % 60).toString();
         if (sec.length < 2) {
             sec = "0" + sec;
         }
         return min + ":" + sec;
-    }
-
-    // Add time between now and startTime to the player whose turn it is. Call BEFORE flipTurn().
-    updateTimer() {
-        let changedTimer = this.state.timer;
-        let currentTime = new Date().getTime();
-        let deltaTime = currentTime - this.state.timer.startTime;
-        if (this.state.turn === "white") {
-            changedTimer.whiteTime -= deltaTime;
-        } else {
-            changedTimer.blackTime -= deltaTime;
-        }
-        changedTimer.startTime = currentTime;
-        this.setState({timer: changedTimer});
     }
 
     render() {

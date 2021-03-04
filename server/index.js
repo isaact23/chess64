@@ -37,6 +37,35 @@ function addGame(sessionId, gameData) {
 let requests = [];
 setInterval(function() { handleRequests(requests, addGame); }, 1000);
 
+// Update timer. Call BEFORE switching turns.
+// TODO: Add increment
+function updateTimer(gameData) {
+    let currentTime = new Date().getTime();
+    let deltaTime = currentTime - gameData.timer.startTime;
+    if (gameData.turn === "white") {
+        gameData.timer.whiteTime -= deltaTime;
+    } else {
+        gameData.timer.blackTime -= deltaTime
+    }
+    gameData.timer.startTime = currentTime;
+}
+
+// Flip turn from white to black or vice versa
+function flipTurn(gameData) {
+    if (gameData.turn === "white") {
+        gameData.turn = "black";
+    } else {
+        gameData.turn = "white";
+    }
+}
+
+// End a game.
+function endGame(gameData, sessionId, outcome) {
+    gameData.socket1.emit("endGame", outcome);
+    gameData.socket2.emit("endGame", outcome);
+    delete games[sessionId];
+    console.log("Ended game");
+}
 
 // Event 'connection' creates a socket from the requesting client
 io.on('connection', (socket) => {
@@ -45,6 +74,7 @@ io.on('connection', (socket) => {
 
     socket.on('requestGame', handleRequestGame);
     socket.on('makeMove', handleMakeMove);
+    socket.on('checkTime', handleCheckTime);
 
     // Handle a player request to play chess
     async function handleRequestGame(settings) {
@@ -59,36 +89,71 @@ io.on('connection', (socket) => {
         let gameData = games[sessionId];
 
         // Verify that the move is legal
-        let chessObj = gameData["chessObj"];
+        let chessObj = gameData.chessObj;
         let serverMove = chessObj.move(move);
         if (serverMove === null) {
             return; // TODO: Emit win/lose messages; terminate game
         }
 
-        // Update timer and flip turn
-        let currentTime = new Date().getTime();
-        let deltaTime = currentTime - gameData.timer.startTime;
-        if (this.state.turn === "white") {
-            gameData.timer.whiteTime -= deltaTime;
-            this.state.turn = "black";
-        } else {
-            gameData.timer.blackTime -= deltaTime
-            this.state.turn = "white";
-        }
-        gameData.timer.startTime = currentTime;
+        updateTimer(gameData);
+        flipTurn(gameData);
 
-        // Send move and remaining times to other player
+        // Send move to other player
         if (serverMove.color === 'w') {
-            gameData.socket2.emit('makeMove', move, gameData.timer);
+            gameData.socket2.emit('makeMove', move);
         } else if (serverMove.color === 'b') {
-            gameData.socket1.emit('makeMove', move, gameData.timer);
+            gameData.socket1.emit('makeMove', move);
         } else {
             console.log("Error! No color detected.");
         }
 
-        // If game is over, remove game from server.
-        if (chessObj.game_over() || chessObj.in_draw()) {
-            delete games[sessionId];
+        // Send time data to both players
+        gameData.socket1.emit("updateTimer", gameData.timer);
+        gameData.socket2.emit("updateTimer", gameData.timer);
+
+        // If the game is finished, inform clients and terminate game.
+        let outcome;
+        let gameOver = false;
+        // Is game over (draw)?
+        if (chessObj.in_draw() || // 50-move; insufficient material
+                chessObj.in_stalemate() ||
+                chessObj.in_threefold_repetition()) {
+            gameOver = true;
+            outcome = "draw";
+        }
+        // Is game over (checkmate)?
+        else if (chessObj.in_checkmate()) {
+            gameOver = true;
+            if (gameData.turn === "white") {
+                outcome = "black_wins";
+            } else if (gameData.turn === "black") {
+                outcome = "white_wins";
+            }
+        }
+        if (gameOver) {
+            endGame(gameData, sessionId, outcome);
+        }
+    }
+
+    // Check timer; if time's up, end the game. Else, update clients on time remaining.
+    async function handleCheckTime(sessionId) {
+        let gameData = games[sessionId];
+        updateTimer(gameData); // Get timer up to date
+
+        let gameOver = false;
+        let outcome;
+        if (gameData.timer.whiteTime <= 0) {
+            gameOver = true;
+            outcome = "black_wins";
+        } else if (gameData.timer.blackTime <= 0) {
+            gameOver = true;
+            outcome = "white_wins";
+        }
+        if (gameOver) {
+            endGame(gameData, sessionId, outcome);
+        } else {
+            gameData.socket1.emit("updateTimer", gameData.timer);
+            gameData.socket2.emit("updateTimer", gameData.timer);
         }
     }
 });
