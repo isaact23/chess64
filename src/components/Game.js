@@ -10,14 +10,22 @@ export default class Game extends React.Component {
     constructor(props) {
         super(props);
         let chessObj = new Chess("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        this.date = new Date();
+        this.settings = this.props.settings;
         this.state = {
             fen: chessObj.fen(),
             chessObj: chessObj,
-            myTurn: this.props.settings.color === "white",
+            currentTurn: "white",
             outcome: null, // win, lose, draw
-            settings: this.props.settings
+            timer: {
+                whiteTime: 0,
+                blackTime: 0,
+                startTime: this.date.getTime()
+            }
         }
         this.onDrop = this.onDrop.bind(this);
+        this.flipTurn = this.flipTurn.bind(this);
+        this.getTime = this.getTime.bind(this);
     }
 
     componentDidMount() {
@@ -38,9 +46,7 @@ export default class Game extends React.Component {
                     outcome: "lose"
                 });
             } else {
-                this.setState({
-                    myTurn: true
-                });
+                this.flipTurn();
             }
             this.setState({
                 fen: this.state.chessObj.fen()
@@ -50,7 +56,7 @@ export default class Game extends React.Component {
 
     onDrop = ({ sourceSquare, targetSquare }) => {
         // Cancel move if it is not our turn.
-        if (!this.state.myTurn) { return; }
+        if (this.state.currentTurn !== this.state.color) { return; }
 
         // Create new move
         let move = this.state.chessObj.move({
@@ -62,11 +68,11 @@ export default class Game extends React.Component {
         // If move is illegal, cancel.
         if (move === null) { return; }
 
-        // Update board
+        // Update chess board
         this.setState({
-            myTurn: false,
             fen: this.state.chessObj.fen()
         });
+        this.flipTurn();
 
         // Determine if game is over
         if (this.state.chessObj.game_over()) {
@@ -77,6 +83,24 @@ export default class Game extends React.Component {
 
         // Send move to server
         this.props.socket.emit("makeMove", move, this.state.settings.sessionId);
+    }
+
+    // Change the turn to the other player.
+    flipTurn() {
+        if (this.state.currentTurn === "white") {
+            this.setState({currentTurn: "black"});
+        } else {
+            this.setState({currentTurn: "white"});
+        }
+    }
+
+    // Return a string representing the time left for a player.
+    getTime(color) {
+        if (color === "white") {
+            if (this.settings.color === "white") {
+
+            }
+        }
     }
 
     render() {
@@ -97,7 +121,7 @@ export default class Game extends React.Component {
                 </div>
                 <div className="gameControls">
                     <div className="timer">
-                        <div className="subTimer"><p>5:00</p></div><div className="subTimer"><p>5:00</p></div>
+                        <div className="subTimer"><p>{this.getTime("white")}</p></div><div className="subTimer"><p>{this.getTime("black")}</p></div>
                     </div>
                     <h2>Outcome: {this.state.outcome}</h2>
                     <button id="resignBtn">
