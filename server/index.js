@@ -65,11 +65,23 @@ io.on('connection', (socket) => {
             return; // TODO: Emit win/lose messages; terminate game
         }
 
-        // Send move to other player
+        // Update timer and flip turn
+        let currentTime = new Date().getTime();
+        let deltaTime = currentTime - gameData.timer.startTime;
+        if (this.state.turn === "white") {
+            gameData.timer.whiteTime -= deltaTime;
+            this.state.turn = "black";
+        } else {
+            gameData.timer.blackTime -= deltaTime
+            this.state.turn = "white";
+        }
+        gameData.timer.startTime = currentTime;
+
+        // Send move and remaining times to other player
         if (serverMove.color === 'w') {
-            gameData.socket2.emit('makeMove', move);
+            gameData.socket2.emit('makeMove', move, gameData.timer);
         } else if (serverMove.color === 'b') {
-            gameData.socket1.emit('makeMove', move);
+            gameData.socket1.emit('makeMove', move, gameData.timer);
         } else {
             console.log("Error! No color detected.");
         }

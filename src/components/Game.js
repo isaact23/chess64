@@ -15,7 +15,7 @@ export default class Game extends React.Component {
         // State changes throughout the game and affects the React component.
         this.state = {
             fen: this.chessObj.fen(),
-            currentTurn: "white",
+            turn: "white",
             outcome: null, // win, lose, draw
             timer: {
                 whiteTime: gameTime,
@@ -35,11 +35,12 @@ export default class Game extends React.Component {
 
     componentDidMount() {
         // Handle the other player making a move
-        this.props.socket.on('makeMove', (move) => {
+        this.props.socket.on('makeMove', (move, timer) => {
             let clientMove = this.chessObj.move(move);
             if (clientMove === null) { return; }
 
-            this.updateTimer();
+            // Update timer with data from server
+            this.setState({timer: timer});
 
             // Is game over (draw)?
             if (this.chessObj.in_draw() || // 50-move; insufficient material
@@ -65,7 +66,7 @@ export default class Game extends React.Component {
     // Handle the client player making a chess move.
     onDrop = ({ sourceSquare, targetSquare }) => {
         // Cancel move if it is not our turn.
-        if (this.state.currentTurn !== this.settings.color) { return; }
+        if (this.state.turn !== this.settings.color) { return; }
 
         // Create new move
         let move = this.chessObj.move({
@@ -98,10 +99,10 @@ export default class Game extends React.Component {
 
     // Change the turn to the other player.
     flipTurn() {
-        if (this.state.currentTurn === "white") {
-            this.setState({currentTurn: "black"});
+        if (this.state.turn === "white") {
+            this.setState({turn: "black"});
         } else {
-            this.setState({currentTurn: "white"});
+            this.setState({turn: "white"});
         }
     }
 
@@ -129,13 +130,12 @@ export default class Game extends React.Component {
         let changedTimer = this.state.timer;
         let currentTime = new Date().getTime();
         let deltaTime = currentTime - this.state.timer.startTime;
-        if (this.state.currentTurn === "white") {
+        if (this.state.turn === "white") {
             changedTimer.whiteTime -= deltaTime;
         } else {
             changedTimer.blackTime -= deltaTime;
         }
         changedTimer.startTime = currentTime;
-        console.log(changedTimer);
         this.setState({timer: changedTimer});
     }
 
