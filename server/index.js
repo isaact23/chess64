@@ -75,6 +75,7 @@ io.on('connection', (socket) => {
     socket.on('requestGame', handleRequestGame);
     socket.on('makeMove', handleMakeMove);
     socket.on('checkTime', handleCheckTime);
+    socket.on('resign', handleResign);
 
     // Handle a player request to play chess
     async function handleRequestGame(settings) {
@@ -158,6 +159,23 @@ io.on('connection', (socket) => {
             gameData.socket1.emit("updateTimer", gameData.timer);
             gameData.socket2.emit("updateTimer", gameData.timer);
         }
+    }
+
+    // Handle a player resigning.
+    async function handleResign(sessionId) {
+        let gameData = games[sessionId];
+        if (gameData === undefined) { return; }
+
+        let outcome;
+        if (gameData.socket1.id === socket.id) {
+            outcome = "black_wins";
+        } else if (gameData.socket2.id === socket.id) {
+            outcome = "white_wins";
+        } else {
+            return;
+        }
+
+        endGame(gameData, sessionId, outcome);
     }
 });
 

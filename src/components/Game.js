@@ -28,11 +28,12 @@ export default class Game extends React.Component {
         this.onDrop = this.onDrop.bind(this);
         this.flipTurn = this.flipTurn.bind(this);
         this.updateTimer = this.updateTimer.bind(this);
+        this.resign = this.resign.bind(this);
         this.getTime = this.getTime.bind(this);
         this.getOutcome = this.getOutcome.bind(this);
 
         // Periodically update the timer on screen
-        setInterval(this.updateTimer, 1000);
+        this.timerInterval = setInterval(this.updateTimer, 1000);
     }
 
     componentDidMount() {
@@ -52,6 +53,7 @@ export default class Game extends React.Component {
                 this.setState({
                     gameOver: true
                 });
+                clearInterval(this.timerInterval);
             }
         });
 
@@ -66,6 +68,7 @@ export default class Game extends React.Component {
                 gameOver: true,
                 outcome: outcome
             });
+            clearInterval(this.timerInterval);
         });
     }
 
@@ -98,6 +101,7 @@ export default class Game extends React.Component {
             this.setState({
                 gameOver: true
             });
+            clearInterval(this.timerInterval);
         }
 
         // Send move to server
@@ -141,6 +145,11 @@ export default class Game extends React.Component {
         }
     }
 
+    // Resign.
+    resign() {
+        this.props.socket.emit("resign", this.settings.sessionId);
+    }
+
     // Return a string representing the time left for a player.
     getTime(color) {
         let time;
@@ -155,6 +164,8 @@ export default class Game extends React.Component {
             sec = 0;
             min += 1;
         }
+        sec = sec.toString();
+        min = min.toString();
         if (sec.length < 2) {
             sec = "0" + sec;
         }
@@ -166,7 +177,7 @@ export default class Game extends React.Component {
         if (this.state.outcome === "draw") {
             return "Draw";
         } else if (this.state.outcome === "white_wins") {
-            return "White Wins";
+            return "White Wins!";
         } else if (this.state.outcome === "black_wins") {
             return "Black Wins!";
         }
@@ -194,7 +205,7 @@ export default class Game extends React.Component {
                         <div className="subTimer"><p>{this.getTime("white")}</p></div><div className="subTimer"><p>{this.getTime("black")}</p></div>
                     </div>
                     <h2>{this.getOutcome()}</h2>
-                    <button id="resignBtn" disabled={this.state.gameOver}>
+                    <button id="resignBtn" onClick={this.resign} disabled={this.state.gameOver}>
                         <p>Resign</p>
                     </button>
                 </div>
