@@ -89,6 +89,7 @@ io.on('connection', (socket) => {
     async function handleMakeMove(move, sessionId) {
         let gameData = games[sessionId];
         if (gameData === undefined) { return; }
+        if (!(gameData.socket1.id === socket.id || gameData.socket2.id === socket.id)) { return; }
 
         // Verify that the move is legal
         let chessObj = gameData.chessObj;
