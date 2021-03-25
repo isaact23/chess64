@@ -57,6 +57,10 @@ export default class Home extends React.Component {
                         <p>10 + 0</p>
                         <p>Rapid</p>
                     </button>
+                    <button id="timeControlBtn" disabled={this.state.joiningGame} onClick={() => this.joinGame(25, 0)}>
+                        <p>25 + 0</p>
+                        <p>Rapid</p>
+                    </button>
                 </div>
             </div>
         );
