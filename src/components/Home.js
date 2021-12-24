@@ -24,6 +24,7 @@ export default class Home extends React.Component {
                 <div className="mainPanel">
                     <h1>Chess 64</h1>
                     <a href="https://github.com/isaact23/chess64"><p>GitHub link</p></a>
+                    <a href="https://www.youtube.com/watch?v=3rId2W7ZQkc"><p>Youtube link</p></a>
                 </div>
                 <div className="newGamePanel">
                     <h1>New game</h1>
